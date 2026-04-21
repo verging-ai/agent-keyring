@@ -90,7 +90,7 @@ Current priorities:
 
 ## Contributing
 
-Feedback, issues, and early discussion are welcome.
+Feedback, issues, and early discussion are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 At this stage, the most useful contributions are:
 
@@ -101,5 +101,5 @@ At this stage, the most useful contributions are:
 
 ## License
 
-TBD
+Licensed under the [Apache License 2.0](LICENSE).
 
