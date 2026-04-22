@@ -5,4 +5,6 @@ coverage
 target
 src-tauri/target
 src-tauri/gen
+*.tsbuildinfo
+.kiro
 

@@ -1,8 +1,38 @@
-import { SectionCard } from "../components/ui/SectionCard";
-import { StatusPill } from "../components/ui/StatusPill";
-import { detectedClients } from "../data/mock";
+import { useEffect } from "react";
+import { SectionCard } from "../shared/ui/SectionCard";
+import { StatusPill } from "../shared/ui/StatusPill";
+import { useConnectors } from "../features/connectors";
+import { useDiscovery } from "../features/discovery";
+import type { DiscoveryStatus } from "../shared/types";
+
+function discoveryTone(status: DiscoveryStatus): "good" | "warn" | "neutral" {
+  if (status === "Installed") return "good";
+  if (status === "DetectFailed" || status === "DetectTimeout") return "warn";
+  return "neutral";
+}
+
+function discoveryLabel(status: DiscoveryStatus): string {
+  switch (status) {
+    case "Installed":
+      return "Detected";
+    case "NotInstalled":
+      return "Not installed";
+    case "DetectFailed":
+      return "Detection failed";
+    case "DetectTimeout":
+      return "Detection timeout";
+  }
+}
 
 export function ClientsPage() {
+  const { results, scanning, error: discoveryError, scan } = useDiscovery();
+  const { connectors, fetchConnectors } = useConnectors();
+
+  useEffect(() => {
+    scan();
+    fetchConnectors();
+  }, [scan, fetchConnectors]);
+
   return (
     <div className="page-stack">
       <header className="page-header">
@@ -10,44 +40,49 @@ export function ClientsPage() {
           <div className="eyebrow">Clients</div>
           <h1>Detect local AI tools before any connector writes happen.</h1>
           <p>
-            This page is the home for install detection, connector support status,
-            and per-client configuration contracts.
+            Install detection, connector support status, and per-client
+            configuration contracts.
           </p>
         </div>
       </header>
 
-      <SectionCard
-        title="Detected and candidate tools"
-        description="Keep supported connectors explicit so users understand exactly what AgentKeyring can touch."
-      >
-        <div className="list-stack">
-          {detectedClients.map((client) => (
-            <article key={client.name} className="list-row list-row-detailed">
-              <div>
-                <strong>{client.name}</strong>
-                <p>{client.location}</p>
-              </div>
-              <div className="client-meta">
-                <span>{client.action}</span>
-                <StatusPill label={client.status} tone={client.tone} />
-              </div>
-            </article>
-          ))}
-        </div>
-      </SectionCard>
+      {discoveryError && (
+        <div className="error-banner" role="alert">{discoveryError}</div>
+      )}
 
       <SectionCard
-        title="Connector contract placeholders"
-        description="A connector should know where config lives, what fields it owns, and how to back up before write."
+        title="Detected and candidate tools"
+        description="Supported connectors are listed with their detection status."
+        aside={
+          <button type="button" onClick={scan} disabled={scanning}>
+            {scanning ? "Scanning…" : "Re-scan"}
+          </button>
+        }
       >
-        <div className="check-grid">
-          <div className="check-item">Path resolver and install verification</div>
-          <div className="check-item">Read current config into a normalized shape</div>
-          <div className="check-item">Preview write diff before applying changes</div>
-          <div className="check-item">Backup and rollback metadata</div>
-        </div>
+        {scanning && results.length === 0 ? (
+          <p>Scanning local system…</p>
+        ) : results.length === 0 ? (
+          <p>No connectors registered yet.</p>
+        ) : (
+          <div className="list-stack">
+            {results.map((r) => (
+              <article key={r.connectorId} className="list-row list-row-detailed">
+                <div>
+                  <strong>{r.displayName}</strong>
+                  {r.detail?.configPaths?.[0] && <p>{r.detail.configPaths[0]}</p>}
+                  {r.detail?.version && <p>v{r.detail.version}</p>}
+                </div>
+                <div className="client-meta">
+                  <StatusPill
+                    label={discoveryLabel(r.status)}
+                    tone={discoveryTone(r.status)}
+                  />
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </SectionCard>
     </div>
   );
 }
-

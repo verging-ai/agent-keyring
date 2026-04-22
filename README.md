@@ -1,22 +1,24 @@
 # AgentKeyring
 
-An open-source desktop tool for managing LLM API keys and syncing them into local AI agents and clients.
+Manage LLM API keys once, validate them, and sync them into your local AI tools safely.
 
-## Why AgentKeyring
+AgentKeyring is an open-source, local-first desktop app for reducing the setup friction around AI agents, coding assistants, and other local AI clients.
 
-Using AI tools locally often means dealing with the same setup problems again and again:
+## Why This Exists
+
+Using AI tools locally often means repeating the same setup work:
 
 - copying API keys into different tools
 - figuring out where config files live
 - switching between providers and models
-- editing env vars or JSON/YAML by hand
+- editing `.env`, JSON, or YAML by hand
 - debugging why a tool still does not work
 
 For many users, this setup friction is much harder than it should be.
 
-AgentKeyring is built to make that experience simpler.
+AgentKeyring is built to make that experience simpler, safer, and easier to understand.
 
-## What AgentKeyring does
+## What It Does
 
 AgentKeyring helps you:
 
@@ -27,7 +29,7 @@ AgentKeyring helps you:
 - sync configuration into those tools with fewer manual steps
 - reduce repeated edits to env vars and config files
 
-## What AgentKeyring is not
+## What It Is Not
 
 AgentKeyring is **not**:
 
@@ -38,21 +40,26 @@ AgentKeyring is **not**:
 
 It is a **local-first configuration and credential management tool**.
 
-## Core use cases
+## Core Workflow
 
-- Add your OpenAI / Anthropic / other provider keys once
-- Verify whether they are valid
-- See which local tools can use them
-- Sync supported configuration into those tools
-- Keep your local LLM setup easier to understand and maintain
+The intended workflow is simple:
 
-## Design goals
+1. Add your OpenAI, Anthropic, or other provider keys once.
+2. Verify that the keys are valid.
+3. Detect which supported local tools are installed.
+4. Preview what configuration changes would be made.
+5. Back up current config before writing anything.
+6. Sync supported settings into the target tool.
 
-- local-first
-- simple enough for non-developers
-- transparent about what changes were made
-- safe by default
-- open source from the beginning
+## Why Local-First Matters
+
+AgentKeyring is designed around a few practical principles:
+
+- your local AI setup should be easier to manage, not harder
+- config writes should be transparent and reversible
+- users should understand what changed and why
+- safety should come before convenience
+- open source should make the behavior inspectable
 
 ## Planned MVP
 
@@ -64,22 +71,24 @@ The first version is expected to focus on:
 - installed tool discovery
 - connector-based config sync
 - backup before config write
-- clear success / failure feedback
+- clear success and failure feedback
 
-## Early target integrations
+## Early Target Integrations
 
-Initial integrations will likely focus on a small number of common tools first, rather than trying to support everything at once.
+The first release should stay focused on a small number of useful targets instead of trying to support everything at once.
 
 Planned categories include:
 
 - agent CLI tools
 - coding assistants
-- editor / note-taking integrations
+- editor and note-taking integrations
 - common config export targets
 
-## Project status
+The long-term goal is to support more tools through a clear connector model, but the initial release should stay narrow and reliable.
 
-AgentKeyring is in early planning and build-in-public mode.
+## Project Status
+
+AgentKeyring is currently in early planning and build-in-public mode.
 
 Current priorities:
 
@@ -99,7 +108,27 @@ At this stage, the most useful contributions are:
 - reporting configuration workflows that are too confusing
 - helping validate the MVP scope
 
+If you are interested in contributing later, likely high-leverage areas will include:
+
+- provider adapters
+- tool connectors
+- config detection rules
+- backup and rollback flows
+- UX improvements for setup clarity
+
+## Roadmap Direction
+
+The short-term goal is not to build a large platform.
+
+The goal is to make local AI configuration less painful for real users by solving a narrow, common, repeated problem well:
+
+- enter keys once
+- detect local tools
+- sync safely
+- explain results clearly
+
+If that workflow becomes genuinely useful, the project can expand from there.
+
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE).
-

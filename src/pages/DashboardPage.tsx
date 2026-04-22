@@ -1,8 +1,37 @@
-import { SectionCard } from "../components/ui/SectionCard";
-import { StatusPill } from "../components/ui/StatusPill";
-import { detectedClients, providerAccounts, syncRuns } from "../data/mock";
+import { useEffect } from "react";
+import { SectionCard } from "../shared/ui/SectionCard";
+import { StatusPill } from "../shared/ui/StatusPill";
+import { useProviders } from "../features/providers";
+import { useDiscovery } from "../features/discovery";
+import { useSync } from "../features/sync";
+import type { DiscoveryStatus, SyncOutcome } from "../shared/types";
+
+function discoveryTone(status: DiscoveryStatus): "good" | "warn" | "neutral" {
+  if (status === "Installed") return "good";
+  if (status === "DetectFailed" || status === "DetectTimeout") return "warn";
+  return "neutral";
+}
+
+function outcomeTone(outcome: SyncOutcome): "good" | "warn" | "neutral" {
+  if (outcome === "Success") return "good";
+  if (outcome === "Failed" || outcome === "RolledBack") return "warn";
+  return "neutral";
+}
 
 export function DashboardPage() {
+  const { providers, fetchProviders } = useProviders();
+  const { results, scan } = useDiscovery();
+  const { history, fetchHistory } = useSync();
+
+  useEffect(() => {
+    fetchProviders();
+    scan();
+    fetchHistory(5);
+  }, [fetchProviders, scan, fetchHistory]);
+
+  const installedCount = results.filter((r) => r.status === "Installed").length;
+  const todaySuccessCount = history.filter((r) => r.result === "Success").length;
+
   return (
     <div className="page-stack">
       <section className="hero-card">
@@ -16,16 +45,16 @@ export function DashboardPage() {
         </div>
         <div className="hero-metrics">
           <div>
-            <strong>3</strong>
+            <strong>{providers.length}</strong>
             <span>Provider slots</span>
           </div>
           <div>
-            <strong>3</strong>
-            <span>Client targets</span>
+            <strong>{installedCount}</strong>
+            <span>Detected clients</span>
           </div>
           <div>
-            <strong>1</strong>
-            <span>Successful sync today</span>
+            <strong>{todaySuccessCount}</strong>
+            <span>Successful syncs</span>
           </div>
         </div>
       </section>
@@ -35,34 +64,45 @@ export function DashboardPage() {
           title="Provider health"
           description="A quick scan of key readiness and model coverage."
         >
-          <div className="list-stack">
-            {providerAccounts.map((provider) => (
-              <article key={provider.name} className="list-row">
-                <div>
-                  <strong>{provider.name}</strong>
-                  <p>{provider.note}</p>
-                </div>
-                <StatusPill label={provider.status} tone={provider.tone} />
-              </article>
-            ))}
-          </div>
+          {providers.length === 0 ? (
+            <p>No providers configured yet.</p>
+          ) : (
+            <div className="list-stack">
+              {providers.map((provider) => (
+                <article key={provider.providerId} className="list-row">
+                  <div>
+                    <strong>{provider.providerId}</strong>
+                    <p>{provider.selectedModels.join(", ") || "No models selected"}</p>
+                  </div>
+                  <StatusPill
+                    label={provider.apiKey ? "Configured" : "No key"}
+                    tone={provider.apiKey ? "good" : "neutral"}
+                  />
+                </article>
+              ))}
+            </div>
+          )}
         </SectionCard>
 
         <SectionCard
           title="Local discovery"
           description="Surface what is installed before touching any config."
         >
-          <div className="list-stack">
-            {detectedClients.map((client) => (
-              <article key={client.name} className="list-row">
-                <div>
-                  <strong>{client.name}</strong>
-                  <p>{client.location}</p>
-                </div>
-                <StatusPill label={client.status} tone={client.tone} />
-              </article>
-            ))}
-          </div>
+          {results.length === 0 ? (
+            <p>No connectors scanned yet.</p>
+          ) : (
+            <div className="list-stack">
+              {results.map((r) => (
+                <article key={r.connectorId} className="list-row">
+                  <div>
+                    <strong>{r.displayName}</strong>
+                    {r.detail?.configPaths?.[0] && <p>{r.detail.configPaths[0]}</p>}
+                  </div>
+                  <StatusPill label={r.status} tone={discoveryTone(r.status)} />
+                </article>
+              ))}
+            </div>
+          )}
         </SectionCard>
       </div>
 
@@ -70,19 +110,22 @@ export function DashboardPage() {
         title="Recent sync activity"
         description="Make writes transparent with previews, backups, and post-write feedback."
       >
-        <div className="list-stack">
-          {syncRuns.map((run) => (
-            <article key={run.target} className="list-row">
-              <div>
-                <strong>{run.target}</strong>
-                <p>{run.detail}</p>
-              </div>
-              <StatusPill label={run.result} tone={run.tone} />
-            </article>
-          ))}
-        </div>
+        {history.length === 0 ? (
+          <p>No sync history yet.</p>
+        ) : (
+          <div className="list-stack">
+            {history.map((record) => (
+              <article key={record.id} className="list-row">
+                <div>
+                  <strong>{record.connectorId}</strong>
+                  <p>{record.changesSummary}</p>
+                </div>
+                <StatusPill label={record.result} tone={outcomeTone(record.result)} />
+              </article>
+            ))}
+          </div>
+        )}
       </SectionCard>
     </div>
   );
 }
-
