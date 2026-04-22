@@ -1,10 +1,33 @@
-# AgentKeyring
+<p align="center">
+  <img src="./assets/logo.png" alt="AgentKeyring logo" width="96" />
+</p>
 
-Manage LLM API keys once, validate them, and sync them into your local AI tools safely.
+<h1 align="center">AgentKeyring</h1>
+
+<p align="center">
+  Manage LLM API keys once, validate them, and sync them into your local AI tools safely.
+</p>
+
+<p align="center">
+  Open-source, local-first desktop app for reducing setup friction across AI agents,
+  coding assistants, and other local AI clients.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Tauri-2.x-24C8DB?style=flat-square&logo=tauri&logoColor=white" alt="Tauri" />
+  <img src="https://img.shields.io/badge/React-18-20232A?style=flat-square&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Local--first-yes-355E3B?style=flat-square" alt="Local-first" />
+  <img src="https://img.shields.io/badge/Open%20Source-Apache%202.0-8B5CF6?style=flat-square" alt="Open Source" />
+</p>
+
+<p align="center">
+  <img src="./assets/github_preview_img.png" alt="AgentKeyring preview" width="760" />
+</p>
 
 AgentKeyring is an open-source, local-first desktop app for reducing the setup friction around AI agents, coding assistants, and other local AI clients.
 
-## Why This Exists
+## The Problem
 
 Using AI tools locally often means repeating the same setup work:
 
@@ -16,9 +39,7 @@ Using AI tools locally often means repeating the same setup work:
 
 For many users, this setup friction is much harder than it should be.
 
-AgentKeyring is built to make that experience simpler, safer, and easier to understand.
-
-## What It Does
+## What AgentKeyring Does
 
 AgentKeyring helps you:
 
@@ -26,8 +47,40 @@ AgentKeyring helps you:
 - validate whether a key actually works
 - inspect available models for supported providers
 - detect supported AI agents and clients installed on your machine
-- sync configuration into those tools with fewer manual steps
+- preview and sync configuration into those tools
+- back up config before writing anything
 - reduce repeated edits to env vars and config files
+
+## How It Works
+
+1. Add your OpenAI, Anthropic, or other provider keys once.
+2. Verify that the keys are valid.
+3. Detect which supported local tools are installed.
+4. Preview what configuration changes would be made.
+5. Back up current config before writing anything.
+6. Sync supported settings into the target tool.
+
+## Why It Feels Different
+
+AgentKeyring is designed around a few practical principles:
+
+- local-first by default
+- transparent about what changes were made
+- backup before config write
+- simple enough for non-developers
+- open source from the beginning
+
+## Planned MVP
+
+The first version is focused on:
+
+- multi-provider API key management
+- key validation
+- model capability detection
+- installed tool discovery
+- connector-based config sync
+- backup before config write
+- clear success and failure feedback
 
 ## What It Is Not
 
@@ -39,39 +92,6 @@ AgentKeyring is **not**:
 - a replacement for your existing AI tools
 
 It is a **local-first configuration and credential management tool**.
-
-## Core Workflow
-
-The intended workflow is simple:
-
-1. Add your OpenAI, Anthropic, or other provider keys once.
-2. Verify that the keys are valid.
-3. Detect which supported local tools are installed.
-4. Preview what configuration changes would be made.
-5. Back up current config before writing anything.
-6. Sync supported settings into the target tool.
-
-## Why Local-First Matters
-
-AgentKeyring is designed around a few practical principles:
-
-- your local AI setup should be easier to manage, not harder
-- config writes should be transparent and reversible
-- users should understand what changed and why
-- safety should come before convenience
-- open source should make the behavior inspectable
-
-## Planned MVP
-
-The first version is expected to focus on:
-
-- multi-provider API key management
-- key validation
-- model capability detection
-- installed tool discovery
-- connector-based config sync
-- backup before config write
-- clear success and failure feedback
 
 ## Early Target Integrations
 
@@ -88,14 +108,28 @@ The long-term goal is to support more tools through a clear connector model, but
 
 ## Project Status
 
-AgentKeyring is currently in early planning and build-in-public mode.
+AgentKeyring is currently in early build mode.
 
 Current priorities:
 
-1. define the MVP clearly
+1. define and tighten the MVP
 2. choose the first supported integrations
 3. validate setup pain points with real users
-4. build a working local-first desktop prototype
+4. ship a working local-first desktop prototype
+
+## Architecture
+
+AgentKeyring is built as a `Tauri 2` desktop app with:
+
+- a Rust backend for secret handling, filesystem operations, detection, backup, and sync orchestration
+- a React + TypeScript frontend for UI, workflows, previews, and results
+- connector and provider extension points for future open-source contributions
+
+See the project docs for more detail:
+
+- [Architecture](./docs/architecture.md)
+- [Connector SDK](./docs/connector-sdk.md)
+- [Provider Adapter](./docs/provider-adapter.md)
 
 ## Contributing
 
@@ -105,29 +139,9 @@ At this stage, the most useful contributions are:
 
 - sharing setup pain points
 - suggesting high-value integrations
-- reporting configuration workflows that are too confusing
-- helping validate the MVP scope
-
-If you are interested in contributing later, likely high-leverage areas will include:
-
-- provider adapters
-- tool connectors
-- config detection rules
-- backup and rollback flows
-- UX improvements for setup clarity
-
-## Roadmap Direction
-
-The short-term goal is not to build a large platform.
-
-The goal is to make local AI configuration less painful for real users by solving a narrow, common, repeated problem well:
-
-- enter keys once
-- detect local tools
-- sync safely
-- explain results clearly
-
-If that workflow becomes genuinely useful, the project can expand from there.
+- reporting confusing configuration workflows
+- proposing or implementing provider adapters
+- proposing or implementing tool connectors
 
 ## License
 
